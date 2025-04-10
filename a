@@ -1,0 +1,32 @@
+from flask import Flask, request
+import datetime
+
+app = Flask(__name__)
+
+@app.route('/api/veri', methods=['GET'])
+def veri():
+    # Veriyi al
+    api_key = request.args.get('api_key')
+    field1 = request.args.get('field1')  # ddmmyyyyhhmmssBasmaDurumu
+    
+    # API key doğrulama (isteğe bağlı)
+    if api_key != "U875E024QK313O2T":
+        return "Hatalı API Key", 403
+
+    if field1:
+        # Veriyi işleme
+        zaman = field1[:14]  # ddmmyyyyhhmmss
+        basma_durumu = field1[14:]  # Basma durumu
+
+        # Veriyi kaydetme (isteğe bağlı, veritabanı kullanabilirsiniz)
+        print(f"Tarih: {zaman}, Basma Durumu: {basma_durumu}")
+
+        # Gelecek için tarih ve zaman dönüşümü
+        zaman_objesi = datetime.datetime.strptime(zaman, '%d%m%Y%H%M%S')
+
+        return f"Veri alındı: {zaman_objesi} Basma Durumu: {basma_durumu}", 200
+    else:
+        return "Veri alınamadı!", 400
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=5000)
